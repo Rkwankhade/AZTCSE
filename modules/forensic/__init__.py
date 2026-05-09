@@ -1,0 +1,1 @@
+from .forensic import run_forensic_investigation

@@ -1,0 +1,97 @@
+{
+  "project_name": "Autonomous Zero-Trust Cloud Security Engine",
+  "resources": [
+    {
+      "id": "internet-alb-01",
+      "name": "Public Application Load Balancer",
+      "type": "load_balancer",
+      "provider": "aws",
+      "exposure": "public",
+      "privileges": [],
+      "sensitive": false,
+      "tags": {
+        "internet_exposed": true
+      }
+    },
+    {
+      "id": "web-ec2-01",
+      "name": "Web Server EC2",
+      "type": "ec2_instance",
+      "provider": "aws",
+      "exposure": "public",
+      "privileges": ["read"],
+      "sensitive": false,
+      "tags": {
+        "no_mfa": true
+      }
+    },
+    {
+      "id": "app-role-01",
+      "name": "Application IAM Role",
+      "type": "iam_role",
+      "provider": "aws",
+      "exposure": "internal",
+      "privileges": ["admin"],
+      "sensitive": false,
+      "tags": {
+        "stale_key": true
+      }
+    },
+    {
+      "id": "payments-db-01",
+      "name": "Payments Database",
+      "type": "database",
+      "provider": "aws",
+      "exposure": "private",
+      "privileges": [],
+      "sensitive": true,
+      "tags": {
+        "contains_pii": true
+      }
+    },
+    {
+      "id": "logs-bucket-01",
+      "name": "CloudTrail Logs Bucket",
+      "type": "s3_bucket",
+      "provider": "aws",
+      "exposure": "private",
+      "privileges": [],
+      "sensitive": true,
+      "tags": {
+        "contains_logs": true
+      }
+    }
+  ],
+  "relationships": [
+    {
+      "source": "internet-alb-01",
+      "target": "web-ec2-01",
+      "kind": "routes_to",
+      "permissions": ["http"],
+      "condition": {}
+    },
+    {
+      "source": "web-ec2-01",
+      "target": "app-role-01",
+      "kind": "assumes_role",
+      "permissions": ["read", "write"],
+      "condition": {
+        "source": "instance-profile"
+      }
+    },
+    {
+      "source": "app-role-01",
+      "target": "payments-db-01",
+      "kind": "can_access",
+      "permissions": ["admin"],
+      "condition": {}
+    },
+    {
+      "source": "app-role-01",
+      "target": "logs-bucket-01",
+      "kind": "can_access",
+      "permissions": ["read"],
+      "condition": {}
+    }
+  ]
+}

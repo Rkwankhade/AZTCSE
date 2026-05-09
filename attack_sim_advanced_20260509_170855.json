@@ -1,0 +1,390 @@
+{
+  "report_metadata": {
+    "generated_at": "2026-05-09T11:38:55.606104+00:00",
+    "module": "Module 11 \u2014 Advanced Attack Simulation",
+    "institution": "IIIT Nagpur"
+  },
+  "summary": {
+    "total_paths": 8,
+    "confirmed_on_aws": 5,
+    "priority_breakdown": {
+      "CRITICAL": 2,
+      "HIGH": 6,
+      "MEDIUM": 0,
+      "LOW": 0
+    }
+  },
+  "attack_paths": [
+    {
+      "path_id": "BACK-0001",
+      "steps": [
+        {
+          "technique": "T1078",
+          "source_node": "external_attacker",
+          "target_node": "AIDA2KXBK6RGNJDWPBYXS",
+          "success_probability": 1.0,
+          "damage_score": 0.5,
+          "stealth_score": 0.5,
+          "description": "Initial compromise of aztcse-scanner"
+        },
+        {
+          "technique": "T1136",
+          "source_node": "AIDA2KXBK6RGNJDWPBYXS",
+          "target_node": "new_hidden_user",
+          "success_probability": 0.85,
+          "damage_score": 0.7,
+          "stealth_score": 0.8,
+          "description": "Create hidden IAM user with innocuous name (e.g. svc-monitor)"
+        },
+        {
+          "technique": "T1098.001",
+          "source_node": "new_hidden_user",
+          "target_node": "new_hidden_user",
+          "success_probability": 0.95,
+          "damage_score": 0.8,
+          "stealth_score": 0.85,
+          "description": "Create long-lived access key \u2014 no expiry, no MFA, no monitoring"
+        }
+      ],
+      "overall_success_probability": 0.8075,
+      "total_damage_score": 2.0,
+      "avg_stealth": 0.717,
+      "objective": "persistence_backdoor",
+      "criticality": "CRITICAL",
+      "step_count": 3,
+      "scenario_name": "Hidden IAM Backdoor User + Persistent Access Key",
+      "kill_chain_phases": [
+        "Initial Access",
+        "Persistence"
+      ],
+      "exploitability_score": 0.79,
+      "remediation_priority": "CRITICAL",
+      "blocked_by": [
+        "MFA Enforcement",
+        "Least Privilege IAM"
+      ],
+      "validated_on_aws": true,
+      "validation_result": "CONFIRMED \u2014 backdoor creation would go undetected",
+      "remediation_steps": [
+        "[IAM] MFA Enforcement: Require MFA for all IAM users",
+        "[IAM] Least Privilege IAM: Remove wildcard permissions"
+      ]
+    },
+    {
+      "path_id": "BACK-0002",
+      "steps": [
+        {
+          "technique": "T1078",
+          "source_node": "external_attacker",
+          "target_node": "AROA2KXBK6RGLX4ALW7UG",
+          "success_probability": 0.76,
+          "damage_score": 0.5,
+          "stealth_score": 0.5,
+          "description": "Initial compromise of aztcse-lab-role"
+        },
+        {
+          "technique": "T1136",
+          "source_node": "AROA2KXBK6RGLX4ALW7UG",
+          "target_node": "new_hidden_user",
+          "success_probability": 0.85,
+          "damage_score": 0.7,
+          "stealth_score": 0.8,
+          "description": "Create hidden IAM user with innocuous name (e.g. svc-monitor)"
+        },
+        {
+          "technique": "T1098.001",
+          "source_node": "new_hidden_user",
+          "target_node": "new_hidden_user",
+          "success_probability": 0.95,
+          "damage_score": 0.8,
+          "stealth_score": 0.85,
+          "description": "Create long-lived access key \u2014 no expiry, no MFA, no monitoring"
+        }
+      ],
+      "overall_success_probability": 0.6137,
+      "total_damage_score": 2.0,
+      "avg_stealth": 0.717,
+      "objective": "persistence_backdoor",
+      "criticality": "CRITICAL",
+      "step_count": 3,
+      "scenario_name": "Hidden IAM Backdoor User + Persistent Access Key",
+      "kill_chain_phases": [
+        "Initial Access",
+        "Persistence"
+      ],
+      "exploitability_score": 0.722,
+      "remediation_priority": "CRITICAL",
+      "blocked_by": [
+        "MFA Enforcement",
+        "Least Privilege IAM"
+      ],
+      "validated_on_aws": true,
+      "validation_result": "CONFIRMED \u2014 backdoor creation would go undetected",
+      "remediation_steps": [
+        "[IAM] MFA Enforcement: Require MFA for all IAM users",
+        "[IAM] Least Privilege IAM: Remove wildcard permissions"
+      ]
+    },
+    {
+      "path_id": "CRED-0002",
+      "steps": [
+        {
+          "technique": "T1078",
+          "source_node": "external_attacker",
+          "target_node": "AIDA2KXBK6RGNJDWPBYXS",
+          "success_probability": 0.75,
+          "damage_score": 0.6,
+          "stealth_score": 0.4,
+          "description": "Try leaked passwords against aztcse-scanner (MFA present)"
+        },
+        {
+          "technique": "T1552.001",
+          "source_node": "AIDA2KXBK6RGNJDWPBYXS",
+          "target_node": "AIDA2KXBK6RGNJDWPBYXS",
+          "success_probability": 0.8,
+          "damage_score": 0.7,
+          "stealth_score": 0.5,
+          "description": "Create persistent access key as aztcse-scanner"
+        }
+      ],
+      "overall_success_probability": 0.6,
+      "total_damage_score": 1.3,
+      "avg_stealth": 0.45,
+      "objective": "credential_stuffing",
+      "criticality": "CRITICAL",
+      "step_count": 2,
+      "scenario_name": "Credential Stuffing via Leaked Password Lists",
+      "kill_chain_phases": [
+        "Initial Access",
+        "Credential Access"
+      ],
+      "exploitability_score": 0.678,
+      "remediation_priority": "HIGH",
+      "blocked_by": [
+        "MFA Enforcement"
+      ],
+      "validated_on_aws": true,
+      "validation_result": "CONFIRMED \u2014 3 users without MFA: aztcse-scanner, aztcse-lab-user, db-service-account",
+      "remediation_steps": [
+        "[IAM] MFA Enforcement: Require MFA for all IAM users"
+      ]
+    },
+    {
+      "path_id": "XACCT-0003",
+      "steps": [
+        {
+          "technique": "T1548.005",
+          "source_node": "external_aws_account",
+          "target_node": "AROA2KXBK6RGLX4ALW7UG",
+          "success_probability": 0.75,
+          "damage_score": 0.85,
+          "stealth_score": 0.6,
+          "description": "Assume aztcse-lab-role from attacker-controlled AWS account"
+        },
+        {
+          "technique": "T1484.001",
+          "source_node": "AROA2KXBK6RGLX4ALW7UG",
+          "target_node": "AROA2KXBK6RGLX4ALW7UG",
+          "success_probability": 0.7,
+          "damage_score": 0.9,
+          "stealth_score": 0.5,
+          "description": "Escalate via aztcse-lab-role \u2014 attach AdministratorAccess"
+        }
+      ],
+      "overall_success_probability": 0.525,
+      "total_damage_score": 1.75,
+      "avg_stealth": 0.55,
+      "objective": "cross_account_pivot",
+      "criticality": "CRITICAL",
+      "step_count": 2,
+      "scenario_name": "Cross-Account Role Assumption via Weak Trust Policy",
+      "kill_chain_phases": [
+        "Privilege Escalation"
+      ],
+      "exploitability_score": 0.641,
+      "remediation_priority": "HIGH",
+      "blocked_by": [
+        "Least Privilege IAM"
+      ],
+      "validated_on_aws": false,
+      "validation_result": "MANUAL CHECK REQUIRED",
+      "remediation_steps": [
+        "[IAM] Least Privilege IAM: Remove wildcard permissions"
+      ]
+    },
+    {
+      "path_id": "CRED-0001",
+      "steps": [
+        {
+          "technique": "T1078",
+          "source_node": "external_attacker",
+          "target_node": "AIDA2KXBK6RGF6JX4PH5N",
+          "success_probability": 0.35,
+          "damage_score": 0.6,
+          "stealth_score": 0.4,
+          "description": "Try leaked passwords against aztcse-lab-user (MFA present)"
+        },
+        {
+          "technique": "T1552.001",
+          "source_node": "AIDA2KXBK6RGF6JX4PH5N",
+          "target_node": "AIDA2KXBK6RGF6JX4PH5N",
+          "success_probability": 0.8,
+          "damage_score": 0.7,
+          "stealth_score": 0.5,
+          "description": "Create persistent access key as aztcse-lab-user"
+        }
+      ],
+      "overall_success_probability": 0.28,
+      "total_damage_score": 1.3,
+      "avg_stealth": 0.45,
+      "objective": "credential_stuffing",
+      "criticality": "HIGH",
+      "step_count": 2,
+      "scenario_name": "Credential Stuffing via Leaked Password Lists",
+      "kill_chain_phases": [
+        "Initial Access",
+        "Credential Access"
+      ],
+      "exploitability_score": 0.566,
+      "remediation_priority": "HIGH",
+      "blocked_by": [
+        "MFA Enforcement"
+      ],
+      "validated_on_aws": true,
+      "validation_result": "CONFIRMED \u2014 3 users without MFA: aztcse-scanner, aztcse-lab-user, db-service-account",
+      "remediation_steps": [
+        "[IAM] MFA Enforcement: Require MFA for all IAM users"
+      ]
+    },
+    {
+      "path_id": "CRED-0003",
+      "steps": [
+        {
+          "technique": "T1078",
+          "source_node": "external_attacker",
+          "target_node": "AIDA2KXBK6RGO2MOSHXWZ",
+          "success_probability": 0.35,
+          "damage_score": 0.6,
+          "stealth_score": 0.4,
+          "description": "Try leaked passwords against db-service-account (MFA present)"
+        },
+        {
+          "technique": "T1552.001",
+          "source_node": "AIDA2KXBK6RGO2MOSHXWZ",
+          "target_node": "AIDA2KXBK6RGO2MOSHXWZ",
+          "success_probability": 0.8,
+          "damage_score": 0.7,
+          "stealth_score": 0.5,
+          "description": "Create persistent access key as db-service-account"
+        }
+      ],
+      "overall_success_probability": 0.28,
+      "total_damage_score": 1.3,
+      "avg_stealth": 0.45,
+      "objective": "credential_stuffing",
+      "criticality": "HIGH",
+      "step_count": 2,
+      "scenario_name": "Credential Stuffing via Leaked Password Lists",
+      "kill_chain_phases": [
+        "Initial Access",
+        "Credential Access"
+      ],
+      "exploitability_score": 0.566,
+      "remediation_priority": "HIGH",
+      "blocked_by": [
+        "MFA Enforcement"
+      ],
+      "validated_on_aws": true,
+      "validation_result": "CONFIRMED \u2014 3 users without MFA: aztcse-scanner, aztcse-lab-user, db-service-account",
+      "remediation_steps": [
+        "[IAM] MFA Enforcement: Require MFA for all IAM users"
+      ]
+    },
+    {
+      "path_id": "XACCT-0001",
+      "steps": [
+        {
+          "technique": "T1548.005",
+          "source_node": "external_aws_account",
+          "target_node": "AROA2KXBK6RGG4SMWBKOA",
+          "success_probability": 0.25,
+          "damage_score": 0.85,
+          "stealth_score": 0.6,
+          "description": "Assume AWSServiceRoleForSupport from attacker-controlled AWS account"
+        },
+        {
+          "technique": "T1484.001",
+          "source_node": "AROA2KXBK6RGG4SMWBKOA",
+          "target_node": "AROA2KXBK6RGG4SMWBKOA",
+          "success_probability": 0.7,
+          "damage_score": 0.9,
+          "stealth_score": 0.5,
+          "description": "Escalate via AWSServiceRoleForSupport \u2014 attach AdministratorAccess"
+        }
+      ],
+      "overall_success_probability": 0.175,
+      "total_damage_score": 1.75,
+      "avg_stealth": 0.55,
+      "objective": "cross_account_pivot",
+      "criticality": "HIGH",
+      "step_count": 2,
+      "scenario_name": "Cross-Account Role Assumption via Weak Trust Policy",
+      "kill_chain_phases": [
+        "Privilege Escalation"
+      ],
+      "exploitability_score": 0.519,
+      "remediation_priority": "HIGH",
+      "blocked_by": [
+        "Least Privilege IAM"
+      ],
+      "validated_on_aws": false,
+      "validation_result": "MANUAL CHECK REQUIRED",
+      "remediation_steps": [
+        "[IAM] Least Privilege IAM: Remove wildcard permissions"
+      ]
+    },
+    {
+      "path_id": "XACCT-0002",
+      "steps": [
+        {
+          "technique": "T1548.005",
+          "source_node": "external_aws_account",
+          "target_node": "AROA2KXBK6RGBVSKDWRBX",
+          "success_probability": 0.25,
+          "damage_score": 0.85,
+          "stealth_score": 0.6,
+          "description": "Assume AWSServiceRoleForTrustedAdvisor from attacker-controlled AWS account"
+        },
+        {
+          "technique": "T1484.001",
+          "source_node": "AROA2KXBK6RGBVSKDWRBX",
+          "target_node": "AROA2KXBK6RGBVSKDWRBX",
+          "success_probability": 0.7,
+          "damage_score": 0.9,
+          "stealth_score": 0.5,
+          "description": "Escalate via AWSServiceRoleForTrustedAdvisor \u2014 attach AdministratorAccess"
+        }
+      ],
+      "overall_success_probability": 0.175,
+      "total_damage_score": 1.75,
+      "avg_stealth": 0.55,
+      "objective": "cross_account_pivot",
+      "criticality": "HIGH",
+      "step_count": 2,
+      "scenario_name": "Cross-Account Role Assumption via Weak Trust Policy",
+      "kill_chain_phases": [
+        "Privilege Escalation"
+      ],
+      "exploitability_score": 0.519,
+      "remediation_priority": "HIGH",
+      "blocked_by": [
+        "Least Privilege IAM"
+      ],
+      "validated_on_aws": false,
+      "validation_result": "MANUAL CHECK REQUIRED",
+      "remediation_steps": [
+        "[IAM] Least Privilege IAM: Remove wildcard permissions"
+      ]
+    }
+  ]
+}

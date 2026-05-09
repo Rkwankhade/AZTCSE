@@ -1,0 +1,462 @@
+{
+  "module": "Module 12 \u2014 Extended Attacker Simulation",
+  "account_id": "710215922764",
+  "region": "us-east-1",
+  "timestamp": "20260509_113909",
+  "aws_intel": {
+    "iam_users_no_mfa": [
+      "aztcse-lab-user",
+      "aztcse-scanner",
+      "db-service-account"
+    ],
+    "iam_user_count": 3,
+    "iam_admin_users": [],
+    "s3_bucket_count": 2,
+    "s3_public_buckets": [],
+    "ec2_open_security_groups": [],
+    "ec2_running_instances": 0,
+    "cloudtrail_trails": 0,
+    "cloudtrail_disabled": [],
+    "secrets_count": 0,
+    "secrets_names": []
+  },
+  "simulations": [
+    {
+      "persona": "Nation-State APT",
+      "exploit_score": 0.77,
+      "time_to_compromise_hours": 45.2,
+      "detection_likelihood": 0.09,
+      "blast_radius": [
+        "IAM Role",
+        "Secrets",
+        "IAM",
+        "IAM User",
+        "S3",
+        "Lambda",
+        "CloudTrail"
+      ],
+      "aws_confirmed_vulns": [
+        "MFA not enabled: aztcse-lab-user, aztcse-scanner, db-service-account"
+      ],
+      "exfil_estimate_gb": 0.9,
+      "recommendations": [
+        "Enable MFA for all IAM users immediately (CRITICAL)",
+        "Deploy GuardDuty + Security Hub + AWS Detective for APT detection"
+      ],
+      "kill_chain": [
+        {
+          "phase": "Reconnaissance",
+          "technique": "OSINT + LinkedIn scraping for AWS account IDs",
+          "target": "External",
+          "success_prob": 0.99,
+          "detection_risk": 0.01,
+          "time_minutes": 120,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Initial Access",
+          "technique": "Spear-phishing \u2192 stolen console credentials",
+          "target": "IAM User",
+          "success_prob": 0.75,
+          "detection_risk": 0.11,
+          "time_minutes": 240,
+          "aws_evidence": "No-MFA users: aztcse-lab-user, aztcse-scanner, db-service-account"
+        },
+        {
+          "phase": "Execution",
+          "technique": "Lambda function deployment with reverse shell",
+          "target": "Lambda",
+          "success_prob": 0.7,
+          "detection_risk": 0.14,
+          "time_minutes": 60,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Persistence",
+          "technique": "Hidden IAM backdoor user + long-lived access key",
+          "target": "IAM",
+          "success_prob": 0.95,
+          "detection_risk": 0.07,
+          "time_minutes": 30,
+          "aws_evidence": "No-MFA users: aztcse-lab-user, aztcse-scanner, db-service-account"
+        },
+        {
+          "phase": "Defense Evasion",
+          "technique": "CloudTrail log deletion + GuardDuty suppression",
+          "target": "CloudTrail",
+          "success_prob": 0.8,
+          "detection_risk": 0.04,
+          "time_minutes": 45,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Credential Access",
+          "technique": "Secrets Manager bulk dump",
+          "target": "Secrets",
+          "success_prob": 0.9,
+          "detection_risk": 0.06,
+          "time_minutes": 20,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Lateral Movement",
+          "technique": "Cross-account role assumption via weak trust",
+          "target": "IAM Role",
+          "success_prob": 0.65,
+          "detection_risk": 0.09,
+          "time_minutes": 90,
+          "aws_evidence": "No-MFA users: aztcse-lab-user, aztcse-scanner, db-service-account"
+        },
+        {
+          "phase": "Collection",
+          "technique": "S3 bucket enumeration + selective data staging",
+          "target": "S3",
+          "success_prob": 0.95,
+          "detection_risk": 0.04,
+          "time_minutes": 180,
+          "aws_evidence": "No public buckets found"
+        },
+        {
+          "phase": "Exfiltration",
+          "technique": "Encrypted S3 replication to attacker account",
+          "target": "S3",
+          "success_prob": 0.88,
+          "detection_risk": 0.02,
+          "time_minutes": 300,
+          "aws_evidence": "No public buckets found"
+        },
+        {
+          "phase": "Impact",
+          "technique": "Persistent access maintained; data sold/exploited",
+          "target": "All",
+          "success_prob": 1.0,
+          "detection_risk": 0.0,
+          "time_minutes": 0,
+          "aws_evidence": ""
+        }
+      ]
+    },
+    {
+      "persona": "Ransomware Group",
+      "exploit_score": 0.5,
+      "time_to_compromise_hours": 0.8,
+      "detection_likelihood": 0.69,
+      "blast_radius": [
+        "IAM",
+        "EC2/Lambda",
+        "IAM User",
+        "S3",
+        "CloudTrail",
+        "S3/RDS"
+      ],
+      "aws_confirmed_vulns": [
+        "MFA not enabled: aztcse-lab-user, aztcse-scanner, db-service-account"
+      ],
+      "exfil_estimate_gb": 0.6,
+      "recommendations": [
+        "Enable MFA for all IAM users immediately (CRITICAL)",
+        "Enable S3 Versioning + Object Lock; use AWS Backup for RDS"
+      ],
+      "kill_chain": [
+        {
+          "phase": "Reconnaissance",
+          "technique": "Shodan scan for exposed AWS endpoints",
+          "target": "External",
+          "success_prob": 0.99,
+          "detection_risk": 0.05,
+          "time_minutes": 15,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Initial Access",
+          "technique": "Credential stuffing via leaked access keys (GitHub)",
+          "target": "IAM User",
+          "success_prob": 0.8,
+          "detection_risk": 0.36,
+          "time_minutes": 10,
+          "aws_evidence": "No-MFA users: aztcse-lab-user, aztcse-scanner, db-service-account"
+        },
+        {
+          "phase": "Execution",
+          "technique": "Pacu framework automated exploitation",
+          "target": "EC2/Lambda",
+          "success_prob": 0.75,
+          "detection_risk": 0.55,
+          "time_minutes": 20,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Persistence",
+          "technique": "Admin IAM user created for ransom negotiation",
+          "target": "IAM",
+          "success_prob": 0.8,
+          "detection_risk": 0.46,
+          "time_minutes": 5,
+          "aws_evidence": "No-MFA users: aztcse-lab-user, aztcse-scanner, db-service-account"
+        },
+        {
+          "phase": "Defense Evasion",
+          "technique": "CloudTrail disabled + GuardDuty detector deleted",
+          "target": "CloudTrail",
+          "success_prob": 0.65,
+          "detection_risk": 0.64,
+          "time_minutes": 5,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Impact",
+          "technique": "S3 mass re-encryption + RDS snapshot deletion",
+          "target": "S3/RDS",
+          "success_prob": 0.85,
+          "detection_risk": 0.86,
+          "time_minutes": 30,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Impact",
+          "technique": "Ransom note uploaded to public S3 bucket",
+          "target": "S3",
+          "success_prob": 1.0,
+          "detection_risk": 0.91,
+          "time_minutes": 5,
+          "aws_evidence": "No public buckets found"
+        }
+      ]
+    },
+    {
+      "persona": "Malicious Insider",
+      "exploit_score": 0.73,
+      "time_to_compromise_hours": 11.8,
+      "detection_likelihood": 0.21,
+      "blast_radius": [
+        "IAM Role",
+        "IAM",
+        "S3",
+        "CloudTrail",
+        "RDS"
+      ],
+      "aws_confirmed_vulns": [
+        "MFA not enabled: aztcse-lab-user, aztcse-scanner, db-service-account"
+      ],
+      "exfil_estimate_gb": 0.85,
+      "recommendations": [
+        "Enable MFA for all IAM users immediately (CRITICAL)"
+      ],
+      "kill_chain": [
+        {
+          "phase": "Reconnaissance",
+          "technique": "Internal Confluence/Slack data mining",
+          "target": "Internal",
+          "success_prob": 0.99,
+          "detection_risk": 0.04,
+          "time_minutes": 480,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Initial Access",
+          "technique": "Console login with own valid credentials",
+          "target": "Console",
+          "success_prob": 1.0,
+          "detection_risk": 0.02,
+          "time_minutes": 5,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Collection",
+          "technique": "Bulk S3 download via AWS CLI with own permissions",
+          "target": "S3",
+          "success_prob": 0.95,
+          "detection_risk": 0.15,
+          "time_minutes": 60,
+          "aws_evidence": "No public buckets found"
+        },
+        {
+          "phase": "Credential Access",
+          "technique": "Self-create additional IAM access key",
+          "target": "IAM",
+          "success_prob": 1.0,
+          "detection_risk": 0.19,
+          "time_minutes": 5,
+          "aws_evidence": "No-MFA users: aztcse-lab-user, aztcse-scanner, db-service-account"
+        },
+        {
+          "phase": "Exfiltration",
+          "technique": "RDS snapshot exported to personal AWS account",
+          "target": "RDS",
+          "success_prob": 0.8,
+          "detection_risk": 0.23,
+          "time_minutes": 120,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Lateral Movement",
+          "technique": "Assume roles granted by overly permissive policies",
+          "target": "IAM Role",
+          "success_prob": 0.7,
+          "detection_risk": 0.15,
+          "time_minutes": 30,
+          "aws_evidence": "No-MFA users: aztcse-lab-user, aztcse-scanner, db-service-account"
+        },
+        {
+          "phase": "Defense Evasion",
+          "technique": "Delete CloudTrail events via console",
+          "target": "CloudTrail",
+          "success_prob": 0.6,
+          "detection_risk": 0.3,
+          "time_minutes": 10,
+          "aws_evidence": ""
+        }
+      ]
+    },
+    {
+      "persona": "Script Kiddie",
+      "exploit_score": 0.14,
+      "time_to_compromise_hours": 0.1,
+      "detection_likelihood": 0.91,
+      "blast_radius": [
+        "S3/Console",
+        "EC2"
+      ],
+      "aws_confirmed_vulns": [
+        "MFA not enabled: aztcse-lab-user, aztcse-scanner, db-service-account"
+      ],
+      "exfil_estimate_gb": 0.2,
+      "recommendations": [
+        "Enable MFA for all IAM users immediately (CRITICAL)"
+      ],
+      "kill_chain": [
+        {
+          "phase": "Reconnaissance",
+          "technique": "ScoutSuite / Pacu auto-scan",
+          "target": "External",
+          "success_prob": 0.99,
+          "detection_risk": 0.78,
+          "time_minutes": 5,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Initial Access",
+          "technique": "Open S3 bucket access / brute force login",
+          "target": "S3/Console",
+          "success_prob": 0.5,
+          "detection_risk": 0.87,
+          "time_minutes": 10,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Execution",
+          "technique": "EC2 crypto-miner deployment (UserData script)",
+          "target": "EC2",
+          "success_prob": 0.6,
+          "detection_risk": 0.92,
+          "time_minutes": 15,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Impact",
+          "technique": "Resource abuse for crypto mining",
+          "target": "EC2",
+          "success_prob": 0.7,
+          "detection_risk": 0.96,
+          "time_minutes": 0,
+          "aws_evidence": ""
+        }
+      ]
+    },
+    {
+      "persona": "Supply Chain Attacker",
+      "exploit_score": 0.6,
+      "time_to_compromise_hours": 60.0,
+      "detection_likelihood": 0.08,
+      "blast_radius": [
+        "CodeBuild",
+        "Secrets",
+        "IAM",
+        "ECR",
+        "Lambda"
+      ],
+      "aws_confirmed_vulns": [
+        "MFA not enabled: aztcse-lab-user, aztcse-scanner, db-service-account"
+      ],
+      "exfil_estimate_gb": 0.75,
+      "recommendations": [
+        "Enable MFA for all IAM users immediately (CRITICAL)",
+        "Pin Lambda layer versions; enable ECR image scanning; use CodeArtifact"
+      ],
+      "kill_chain": [
+        {
+          "phase": "Reconnaissance",
+          "technique": "Open-source dependency graph analysis",
+          "target": "External",
+          "success_prob": 0.99,
+          "detection_risk": 0.01,
+          "time_minutes": 240,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Initial Access",
+          "technique": "Malicious Lambda layer published to public registry",
+          "target": "Lambda",
+          "success_prob": 0.7,
+          "detection_risk": 0.04,
+          "time_minutes": 480,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Execution",
+          "technique": "Lambda env var exfiltration on next invocation",
+          "target": "Lambda",
+          "success_prob": 0.85,
+          "detection_risk": 0.07,
+          "time_minutes": 0,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Persistence",
+          "technique": "Backdoor baked into ECR base image",
+          "target": "ECR",
+          "success_prob": 0.8,
+          "detection_risk": 0.06,
+          "time_minutes": 120,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Credential Access",
+          "technique": "CI/CD env secrets exfiltrated via CodeBuild logs",
+          "target": "CodeBuild",
+          "success_prob": 0.75,
+          "detection_risk": 0.09,
+          "time_minutes": 60,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Lateral Movement",
+          "technique": "Use stolen creds to pivot to production account",
+          "target": "IAM",
+          "success_prob": 0.75,
+          "detection_risk": 0.11,
+          "time_minutes": 90,
+          "aws_evidence": "No-MFA users: aztcse-lab-user, aztcse-scanner, db-service-account"
+        },
+        {
+          "phase": "Collection",
+          "technique": "Bulk secret export from Secrets Manager",
+          "target": "Secrets",
+          "success_prob": 0.88,
+          "detection_risk": 0.07,
+          "time_minutes": 30,
+          "aws_evidence": ""
+        },
+        {
+          "phase": "Exfiltration",
+          "technique": "Data exfil via DNS tunneling from Lambda",
+          "target": "Lambda",
+          "success_prob": 0.72,
+          "detection_risk": 0.04,
+          "time_minutes": 180,
+          "aws_evidence": ""
+        }
+      ]
+    }
+  ]
+}
