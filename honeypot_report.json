@@ -1,10 +1,58 @@
 {
-  "generated_at": "2026-05-09T10:53:31.781676+00:00",
-  "deployed_resources": {},
-  "total_events": 0,
-  "events": [],
+  "generated_at": "2026-05-09T12:55:57.111599+00:00",
+  "deployed_resources": {
+    "s3_honeypot": "prod-backup-store-922764"
+  },
+  "total_events": 6,
+  "events": [
+    {
+      "timestamp": "2026-05-09 18:20:07+05:30",
+      "resource_type": "S3_HONEYPOT",
+      "source_ip": "152.58.32.144",
+      "action": "CreateBucket",
+      "user_identity": "arn:aws:iam::710215922764:root"
+    },
+    {
+      "timestamp": "2026-05-09 16:23:30+05:30",
+      "resource_type": "S3_HONEYPOT",
+      "source_ip": "152.58.32.58",
+      "action": "CreateBucket",
+      "user_identity": "arn:aws:iam::710215922764:user/aztcse-scanner"
+    },
+    {
+      "timestamp": "2026-05-09 15:50:03+05:30",
+      "resource_type": "S3_HONEYPOT",
+      "source_ip": "152.58.32.58",
+      "action": "PutBucketTagging",
+      "user_identity": "arn:aws:iam::710215922764:user/aztcse-scanner"
+    },
+    {
+      "timestamp": "2026-05-09 15:50:02+05:30",
+      "resource_type": "S3_HONEYPOT",
+      "source_ip": "152.58.32.58",
+      "action": "CreateBucket",
+      "user_identity": "arn:aws:iam::710215922764:user/aztcse-scanner"
+    },
+    {
+      "timestamp": "2026-05-09 15:46:23+05:30",
+      "resource_type": "S3_HONEYPOT",
+      "source_ip": "152.58.32.58",
+      "action": "CreateBucket",
+      "user_identity": "arn:aws:iam::710215922764:user/aztcse-scanner"
+    },
+    {
+      "timestamp": "2026-05-09 15:45:35+05:30",
+      "resource_type": "S3_HONEYPOT",
+      "source_ip": "152.58.32.58",
+      "action": "CreateBucket",
+      "user_identity": "arn:aws:iam::710215922764:user/aztcse-scanner"
+    }
+  ],
   "summary": {
-    "honeypot_triggered": false,
-    "unique_ips": []
+    "honeypot_triggered": true,
+    "unique_ips": [
+      "152.58.32.58",
+      "152.58.32.144"
+    ]
   }
 }

@@ -40,11 +40,15 @@ class HoneypotEngine:
     async def deploy_s3_honeypot(self):
         try:
             console.print(f"[yellow]Deploying S3 honeypot: {self.honeypot_bucket}[/yellow]")
-            if self.region == "us-east-1":
-                self.s3.create_bucket(Bucket=self.honeypot_bucket)
-            else:
-                self.s3.create_bucket(Bucket=self.honeypot_bucket,
-                    CreateBucketConfiguration={"LocationConstraint": self.region})
+            try:
+                self.s3.head_bucket(Bucket=self.honeypot_bucket)
+                console.print(f"[yellow]S3 honeypot already deployed: {self.honeypot_bucket}[/yellow]")
+            except Exception:
+                if self.region == "us-east-1":
+                    self.s3.create_bucket(Bucket=self.honeypot_bucket)
+                else:
+                    self.s3.create_bucket(Bucket=self.honeypot_bucket,
+                        CreateBucketConfiguration={"LocationConstraint": self.region})
             for key, content in {"credentials/aws_keys.txt": "FAKE_KEY",
                                   "backup/users_db_2024.sql": "-- fake backup",
                                   "config/production.env": "DB_PASS=fake"}.items():
@@ -61,7 +65,11 @@ class HoneypotEngine:
     async def deploy_iam_honeypot(self):
         try:
             console.print(f"[yellow]Deploying IAM honeypot: {self.honeypot_user}[/yellow]")
-            self.iam.create_user(UserName=self.honeypot_user,
+            try:
+                self.iam.get_user(UserName=self.honeypot_user)
+                console.print(f'[yellow]IAM honeypot already deployed: {self.honeypot_user}[/yellow]')
+            except self.iam.exceptions.NoSuchEntityException:
+                self.iam.create_user(UserName=self.honeypot_user,
                 Tags=[{"Key": "aztcse-honeypot", "Value": "true"}])
             key_response = self.iam.create_access_key(UserName=self.honeypot_user)
             honeypot_key = key_response["AccessKey"]
